@@ -7,12 +7,21 @@ from api_refs.utils import check_email
 
 
 class UserSerializer(serializers.ModelSerializer):
+    id: int
+    user: User
+    code: str
+    email: str
+
     class Meta:
         model = User
         fields = ['id', 'username', "email"]
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    username: str
+    password: str
+    password2: str
+    email: str
 
     password2 = serializers.CharField(write_only=True)
 
@@ -27,14 +36,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     @staticmethod
-    def validate_email(email):
+    def validate_email(email: str) -> str:
 
         if not check_email(email):
             raise serializers.ValidationError('Не рабочий email')
 
         return email
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> User:
         username = validated_data["username"]
         email = validated_data["email"]
         password = validated_data["password"]
@@ -48,7 +57,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class RegistrationWithReferralSerializer(serializers.ModelSerializer):
-    referral_code = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    username: str
+    email: str
+    password: str
+    referral_code: str = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
     class Meta:
         model = User
@@ -56,7 +68,7 @@ class RegistrationWithReferralSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     @staticmethod
-    def validate_referral_code(value):
+    def validate_referral_code(value: str) -> str:
         if value:
             try:
                 referral_code = ReferralCode.objects.get(code=value, expiration_date__gt=timezone.now())

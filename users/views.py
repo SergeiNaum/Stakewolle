@@ -1,6 +1,9 @@
+from typing import Any
+
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.request import Request
 from drf_spectacular.utils import extend_schema
 
 from users.serializers import RegisterSerializer, RegistrationWithReferralSerializer
@@ -15,7 +18,7 @@ class RegisterView(generics.GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
@@ -26,7 +29,7 @@ class RegisterView(generics.GenericAPIView):
             validated_data['password']
         )
 
-        response_data = {
+        response_data: dict = {
             "message": "Пользователь успешно зарегистрирован",
             "task_id": task.id
         }
@@ -41,7 +44,7 @@ class RegisterWithReferralView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = RegistrationWithReferralSerializer
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
@@ -53,7 +56,7 @@ class RegisterWithReferralView(generics.CreateAPIView):
             validated_data.get('referral_code')
         )
 
-        response_data = {
+        response_data: dict = {
             "message": "Регистрация пользователя по реферальной ссылке завершена",
             "task_id": task.id
         }

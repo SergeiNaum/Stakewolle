@@ -5,7 +5,7 @@ from requests.exceptions import RequestException
 from config.settings import apikey
 
 
-def check_email(email):
+def check_email(email: str) -> bool:
 
     try:
         email_verify = requests.get(
