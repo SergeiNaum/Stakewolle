@@ -26,7 +26,12 @@ def create_referral_code_task(user_id):
 
 @shared_task
 def delete_referral_code_task(referral_code_id):
-    ReferralCode.objects.filter(id=referral_code_id).delete()
+    try:
+        referral_code = ReferralCode.objects.get(id=referral_code_id)
+        referral_code.delete()
+        return {"message": "Реферальный код успешно удален"}
+    except ReferralCode.DoesNotExist:
+        return {"error": "Реферальный код не найден"}
 
 
 @shared_task

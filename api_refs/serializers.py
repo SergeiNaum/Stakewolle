@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+
 from rest_framework import serializers
 from api_refs.models import ReferralCode, Referral
 
@@ -28,6 +30,20 @@ class ReferralSerializer(serializers.ModelSerializer):
 class EmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
+    @staticmethod
+    def validate_email(value):
+        try:
+            user = get_user_model()
+            user = user.objects.get(email=value)
+        except user.DoesNotExist:
+            raise serializers.ValidationError({"errors": "Пользователь с таким email не найден."})
+
+        referral_code = ReferralCode.objects.filter(user=user, expiration_date__gt=timezone.now()).first()
+        if referral_code:
+            return {"referral_code": referral_code.code}
+        else:
+            raise serializers.ValidationError({"errors": "У пользователя нет активного реферального кода."})
+
 
 class ReferrerWithReferralsSerializer(serializers.ModelSerializer):
     referrals = serializers.SerializerMethodField()
@@ -36,7 +52,8 @@ class ReferrerWithReferralsSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ('username', 'email', 'date_joined', 'referrals')
 
-    def get_referrals(self, obj):
+    @staticmethod
+    def get_referrals(obj):
         referrals = Referral.objects.filter(referrer=obj)
         referral_users = [referral.referral_user for referral in referrals]
         return UserForRefsSerializer(referral_users, many=True).data
