@@ -30,12 +30,21 @@ def delete_referral_code_task(referral_code_id):
 
 
 @shared_task
-def create_referral_task(referral_code, new_user_id):
-    try:
-        referrer_code = ReferralCode.objects.get(code=referral_code, expiration_date__gt=timezone.now())
-        Referral.objects.create(referrer=referrer_code.user, referral_user_id=new_user_id)
-    except ReferralCode.DoesNotExist:
-        return Response({"error": "Реферальный код не найден"})
+def register_user_referral(username, email, password, referral_code=None):
+    user = User.objects.create_user(
+        username=username,
+        email=email,
+        password=password
+    )
+
+    if referral_code:
+        try:
+            referrer_code = ReferralCode.objects.get(code=referral_code, expiration_date__gt=timezone.now())
+            Referral.objects.create(referrer=referrer_code.user, referral_user=user)
+        except ReferralCode.DoesNotExist:
+            pass
+
+    return user.pk
 
 
 @shared_task

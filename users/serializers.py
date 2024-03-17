@@ -1,8 +1,8 @@
-from typing import Dict, Any
-
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from api_refs.tasks import create_referral_task
+from django.utils import timezone
+
+from api_refs.models import ReferralCode
 from api_refs.utils import check_email
 
 
@@ -48,19 +48,20 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class RegistrationWithReferralSerializer(serializers.ModelSerializer):
-    referral_code = serializers.CharField(required=False)
+    referral_code = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
     class Meta:
         model = User
         fields = ('username', 'email', 'password', 'referral_code')
         extra_kwargs = {'password': {'write_only': True}}
 
-    def create(self, validated_data):
-        referral_code = validated_data.pop('referral_code', None)
-
-        if referral_code:
-            user = User.objects.create_user(**validated_data)
-            create_referral_task.delay(referral_code, user.id)
-            return user
+    @staticmethod
+    def validate_referral_code(value):
+        if value:
+            try:
+                referral_code = ReferralCode.objects.get(code=value, expiration_date__gt=timezone.now())
+            except ReferralCode.DoesNotExist:
+                raise serializers.ValidationError("Неправильный реферальный код")
         else:
-            raise serializers.ValidationError({"error": "Введите реферальный код"})
+            raise serializers.ValidationError("Введите реферальный код")
+        return value
