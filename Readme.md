@@ -7,7 +7,7 @@
 
 ---
 ```
-docker pull sergeynaum/electroservice:latest
+docker pull sergeynaum/stakewolle:latest
 ```
 ---
 

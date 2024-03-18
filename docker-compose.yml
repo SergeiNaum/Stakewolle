@@ -9,9 +9,7 @@ networks:
 
 services:
   django:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: sergeynaum/stakewolle:latest
     container_name: api_refs
     restart: always
     env_file:
