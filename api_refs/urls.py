@@ -16,7 +16,6 @@ Including another URLconf
 """
 
 from django.urls import path
-from django.views.decorators.cache import cache_page
 
 from api_refs import views
 
@@ -33,7 +32,7 @@ urlpatterns = [
     ),
     path(
         "referral-codes/<uuid:task_id>/result/",
-        cache_page(10)(views.ShowUserReferalCode.as_view()),
+        views.ShowUserReferalCode.as_view(),
         name="show-code",
     ),
     path(

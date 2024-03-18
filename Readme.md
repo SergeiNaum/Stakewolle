@@ -10,17 +10,17 @@
   
 #### Or you can deploy the project locally by following these instructions:
 
-##### create directory app and navigate to it
-
-```
-mkdir app && cd app
-```
----
-
 ##### clonne project from repo
 
 ```
 git clone https://github.com/SergeiNaum/Stakewolle.git
+```
+---
+
+##### navigate to project_folder
+
+```
+cd Stakewolle
 ```
 ---
 

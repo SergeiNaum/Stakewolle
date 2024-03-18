@@ -2,6 +2,7 @@ import datetime
 from typing import Union, Dict, Optional, List
 
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.utils import timezone
 
 from rest_framework import serializers
@@ -47,15 +48,19 @@ class EmailSerializer(serializers.Serializer):
     @staticmethod
     def validate_email(value: str) -> Union[Dict[str, str], None]:
         try:
-            user: UserModel = get_user_model()
+            user: (
+                get_user_model()
+                .objects.select_related("referral_code")
+                .get(email=value)
+            )
             user: UserModel = user.objects.get(email=value)
         except user.DoesNotExist:
             raise serializers.ValidationError(
                 {"errors": "Пользователь с таким email не найден."}
             )
 
-        referral_code: Optional[ReferralCode] = ReferralCode.objects.filter(
-            user=user, expiration_date__gt=timezone.now()
+        referral_code: Optional[ReferralCode] = user.referral_code.filter(
+            expiration_date__gt=timezone.now()
         ).first()
         if referral_code:
             return {"referral_code": referral_code.code}
@@ -73,9 +78,15 @@ class ReferrerWithReferralsSerializer(serializers.ModelSerializer):
         fields = ("username", "email", "date_joined", "referrals")
 
     @staticmethod
-    def get_referrals(obj) -> List[UserForRefsSerializer]:
-        referrals: Optional[Referral] = Referral.objects.filter(referrer=obj)
-        referral_users: List[Referral] = [
-            referral.referral_user for referral in referrals
-        ]
-        return UserForRefsSerializer(referral_users, many=True).data
+    def get_referrals(obj):
+        cache_key = f"referrals_{obj.pk}"
+        referrals = cache.get(cache_key)
+        if referrals is None:
+            referrals = obj.referrals.all()
+            referrals_data = UserForRefsSerializer(
+                [referral.referral_user for referral in referrals], many=True
+            ).data
+            cache.set(cache_key, referrals_data, timeout=5)  # Кеширование на 1 час
+        else:
+            referrals_data = referrals
+        return referrals_data
