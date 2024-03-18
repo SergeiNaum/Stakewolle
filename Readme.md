@@ -3,19 +3,17 @@
 
 ## Quick start
 
-
-##### Download image from docker hub
-
----
-```
-docker pull sergeynaum/stakewolle:latest
-```
----
-
 ##### create directory app and navigate to it
 
 ```
 mkdir app && cd app
+```
+---
+
+##### clonne project from repo
+
+```
+git clone https://github.com/SergeiNaum/Stakewolle.git
 ```
 ---
 
