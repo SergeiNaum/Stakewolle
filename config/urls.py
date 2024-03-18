@@ -23,19 +23,12 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
     SpectacularRedocView,
 )
-from django.views.decorators.cache import cache_page
 
-
-from api_refs import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', include('users.urls')),
-    path('referral-code/', views.ReferralCodeCreateView.as_view(), name='create-referral-code'),
-    path('referral-code/delete/', views.ReferralCodeDestroyView.as_view(), name='delete-referral-code'),
-    path("referral-codes/<uuid:task_id>/result/", cache_page(10)(views.ShowUserReferalCode.as_view()), name='show-code'),
-    path('referral-code/by-email/', views.ReferralCodeByEmailView.as_view(), name='referral-code-by-email'),
-    path('referrals/', views.ReferralListView.as_view(), name='referral_list'),
+    path('', include('api_refs.urls')),
 
     path('api/drf-auth/', include('rest_framework.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
