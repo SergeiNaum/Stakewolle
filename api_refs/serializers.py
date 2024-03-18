@@ -86,7 +86,7 @@ class ReferrerWithReferralsSerializer(serializers.ModelSerializer):
             referrals_data = UserForRefsSerializer(
                 [referral.referral_user for referral in referrals], many=True
             ).data
-            cache.set(cache_key, referrals_data, timeout=5)  # Кеширование на 1 час
+            cache.set(cache_key, referrals_data, timeout=10)  # Кеширование на 1 час
         else:
             referrals_data = referrals
         return referrals_data

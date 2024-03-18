@@ -35,17 +35,29 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {"password": {"write_only": True}}
 
+    # @staticmethod
+    # def validate_email(email: str) -> str:
+    #
+    #     if not check_email(email):
+    #         raise serializers.ValidationError("Не рабочий email")
+    #     if User.objects.filter(email=email).exists():
+    #         raise serializers.ValidationError(
+    #             {"email": "Пользователь с таким email уже существует"}
+    #         )
+    #
+    #     return email
+
     @staticmethod
     def validate_email(email: str) -> str:
-
-        if not check_email(email):
-            raise serializers.ValidationError("Не рабочий email")
-        if User.objects.filter(email=email).exists():
-            raise serializers.ValidationError(
-                {"email": "Пользователь с таким email уже существует"}
-            )
-
-        return email
+        try:
+            user =User.objects.select_related('referral_code').get(email=email)
+        except User.DoesNotExist:
+            if check_email(email):
+                return email
+            else:
+                raise serializers.ValidationError("Не рабочий email")
+        else:
+            raise serializers.ValidationError({"email": f"Пользователь username: {user.username} с таким email уже существует"})
 
     def validate(self, attrs: dict):
         password = attrs["password"]
