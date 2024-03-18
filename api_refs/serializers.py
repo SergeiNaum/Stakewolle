@@ -1,5 +1,5 @@
 import datetime
-from typing import Union, Dict, Optional, List
+from typing import Union, Dict, List
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
