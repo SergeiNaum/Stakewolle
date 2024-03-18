@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', "email"]
+        fields = ["id", "username", "email"]
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -39,15 +39,17 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate_email(email: str) -> str:
 
         if not check_email(email):
-            raise serializers.ValidationError('Не рабочий email')
+            raise serializers.ValidationError("Не рабочий email")
         if User.objects.filter(email=email).exists():
-            raise serializers.ValidationError({"email": "Пользователь с таким email уже существует"})
+            raise serializers.ValidationError(
+                {"email": "Пользователь с таким email уже существует"}
+            )
 
         return email
 
     def validate(self, attrs: dict):
-        password = attrs['password']
-        password2 = attrs['password2']
+        password = attrs["password"]
+        password2 = attrs["password2"]
 
         if password != password2:
             raise serializers.ValidationError({"password": "Пароли не совпадают"})
@@ -69,18 +71,20 @@ class RegistrationWithReferralSerializer(serializers.ModelSerializer):
     username: str
     email: str
     password: str
-    referral_code: str = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    referral_code: str = serializers.CharField(
+        required=False, allow_null=True, allow_blank=True
+    )
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'referral_code')
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = ("username", "email", "password", "referral_code")
+        extra_kwargs = {"password": {"write_only": True}}
 
     @staticmethod
     def validate_referral_code(value: str) -> str:
         if value:
             try:
-                referral_code = ReferralCode.objects.get(code=value, expiration_date__gt=timezone.now())
+                referral_code = ReferralCode.objects.get(code=value, expiration_date__gt=timezone.now())  # noqa F841
             except ReferralCode.DoesNotExist:
                 raise serializers.ValidationError("Неправильный реферальный код")
         else:

@@ -9,11 +9,12 @@ def check_email(email: str) -> bool:
 
     try:
         email_verify = requests.get(
-            f"https://emailvalidation.abstractapi.com/v1/?api_key={apikey}&email={email}")
+            f"https://emailvalidation.abstractapi.com/v1/?api_key={apikey}&email={email}"
+        )
         email_verify.raise_for_status()
         email_data = email_verify.content
         data_json = json.loads(email_data)
-        if data_json['deliverability'] == 'DELIVERABLE':
+        if data_json["deliverability"] == "DELIVERABLE":
             return True
         else:
             return False

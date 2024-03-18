@@ -14,17 +14,32 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.urls import path
 from django.views.decorators.cache import cache_page
 
 from api_refs import views
 
 urlpatterns = [
-
-    path('referral-code/', views.ReferralCodeCreateView.as_view(), name='create-referral-code'),
-    path('referral-code/delete/', views.ReferralCodeDestroyView.as_view(), name='delete-referral-code'),
-    path("referral-codes/<uuid:task_id>/result/", cache_page(10)(views.ShowUserReferalCode.as_view()), name='show-code'),
-    path('referral-code/by-email/', views.ReferralCodeByEmailView.as_view(), name='referral-code-by-email'),
-    path('referrals/', views.ReferralListView.as_view(), name='referral_list'),
-
+    path(
+        "referral-code/",
+        views.ReferralCodeCreateView.as_view(),
+        name="create-referral-code",
+    ),
+    path(
+        "referral-code/delete/",
+        views.ReferralCodeDestroyView.as_view(),
+        name="delete-referral-code",
+    ),
+    path(
+        "referral-codes/<uuid:task_id>/result/",
+        cache_page(10)(views.ShowUserReferalCode.as_view()),
+        name="show-code",
+    ),
+    path(
+        "referral-code/by-email/",
+        views.ReferralCodeByEmailView.as_view(),
+        name="referral-code-by-email",
+    ),
+    path("referrals/", views.ReferralListView.as_view(), name="referral_list"),
 ]

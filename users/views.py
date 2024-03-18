@@ -11,8 +11,8 @@ from api_refs.tasks import register_user, register_user_referral
 
 
 @extend_schema(
-    tags=['Registration'],
-    summary='Registration new user by username, password, password2, email'
+    tags=["Registration"],
+    summary="Registration new user by username, password, password2, email",
 )
 class RegisterView(generics.GenericAPIView):
     permission_classes = [AllowAny]
@@ -24,22 +24,22 @@ class RegisterView(generics.GenericAPIView):
         validated_data = serializer.validated_data
 
         task_create = register_user.delay(
-            validated_data['username'],
-            validated_data['email'],
-            validated_data['password'],
+            validated_data["username"],
+            validated_data["email"],
+            validated_data["password"],
         )
         # enrich_user_data.delay(user.email)  # Hypothetical launch of email data enrichment
 
         response_data: dict = {
             "message": "Пользователь успешно зарегистрирован",
-            "task_id": task_create.id
+            "task_id": task_create.id,
         }
         return Response(response_data, status=status.HTTP_202_ACCEPTED)
 
 
 @extend_schema(
-    tags=['Registration'],
-    summary='Registration new referer user by username, password, email, referral_code'
+    tags=["Registration"],
+    summary="Registration new referer user by username, password, email, referral_code",
 )
 class RegisterWithReferralView(generics.CreateAPIView):
     permission_classes = [AllowAny]
@@ -51,14 +51,14 @@ class RegisterWithReferralView(generics.CreateAPIView):
         validated_data = serializer.validated_data
 
         task = register_user_referral.delay(
-            validated_data['username'],
-            validated_data['email'],
-            validated_data['password'],
-            validated_data.get('referral_code')
+            validated_data["username"],
+            validated_data["email"],
+            validated_data["password"],
+            validated_data.get("referral_code"),
         )
 
         response_data: dict = {
             "message": "Регистрация пользователя по реферальной ссылке завершена",
-            "task_id": task.id
+            "task_id": task.id,
         }
         return Response(response_data, status=status.HTTP_202_ACCEPTED)
