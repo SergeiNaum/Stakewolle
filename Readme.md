@@ -1,3 +1,4 @@
+[![Lint Code](https://github.com/SergeiNaum/Stakewolle/actions/workflows/linter_check.yml/badge.svg)](https://github.com/SergeiNaum/Stakewolle/actions/workflows/linter_check.yml)
 # **Api_Refs** Api for working with user referer system. Created with DRF, Celery, redis
 
 ## Quick start
@@ -34,9 +35,78 @@ Swagger ui documentation
 http://127.0.0.1:8000/api/schema/swagger-ui/
 ```
 ---
-Output wallets of all users by GET method
+Or use curl or Postman
+
+
+Generate jwt tokens (access and refresh)
 ```
-curl http://127.0.0.1:8000/api/v1/balance/
+curl http://127.0.0.1:8000/api/token/
+```
+
+---
+
+Update jwt token upon entry refresh token
+```
+curl http://127.0.0.1:8000/api/token/refresh/
+```
+
+---
+
+Takes a token and indicates if it is valid. This view provides no information about a token's fitness for a particular use.
+```
+curl http://127.0.0.1:8000/api/token/verify/
+```
+---
+
+Create a new referral code for the user
+```
+curl -X POST http://127.0.0.1:8000/referral-code/
+```
+
+Destroy a user's referral code
+```
+curl -X DELETE http://127.0.0.1:8000/referral-code/delete/
+```
+
+---
+
+Show referal code for authenticated user but 
+```
+curl http://127.0.0.1:8000/referral-codes/<uuid:task_id>/result/
+```
+
+---
+
+Retrieve a referral code by email
+```
+curl -X POST http://127.0.0.1:8000/referral-code/by-email/ -d '{"email": "example@example.com"}' -H "Content-Type: application/json"
+```
+
+Show all referrals for current is authenticated user
+```
+curl http://127.0.0.1:8000/referrals/
+```
+
+---
+
+Registration new user by username, password, password2, email
+```
+curl -X POST http://127.0.0.1:8000/register/ -d '{"username": "jks3WBi_L2_ta0KgCD9yn@wUZBbeNEI", "password": "string", "password2": "string", "email": "user@example.com"}' -H "Content-Type: application/json"
+```
+
+---
+
+Registration new referer user by username, password, email, referral_code
+```
+curl -X POST http://127.0.0.1:8000/register/refer/ -d '{"username": "SZjGbYbxb", "email": "user@example.com", "password": "string", "referral_code": "string"}' -H "Content-Type: application/json"
+```
+
+---
+
+**To stop app, execute the command**
+
+```
+docker-compose down -v
 ```
 
 
@@ -50,3 +120,4 @@ curl http://127.0.0.1:8000/api/v1/balance/
 ###### Since DRF does not support asynchrony to emit asynchrony in the project I use Celery - mechanism of deferred tasks, how well it worked out for me is for you to judge, I am always open to criticism because it is criticism that makes me a better specialist.
 
 ---
+
