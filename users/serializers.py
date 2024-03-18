@@ -50,14 +50,18 @@ class RegisterSerializer(serializers.ModelSerializer):
     @staticmethod
     def validate_email(email: str) -> str:
         try:
-            user =User.objects.select_related('referral_code').get(email=email)
+            user = User.objects.select_related("referral_code").get(email=email)
         except User.DoesNotExist:
             if check_email(email):
                 return email
             else:
                 raise serializers.ValidationError("Не рабочий email")
         else:
-            raise serializers.ValidationError({"email": f"Пользователь username: {user.username} с таким email уже существует"})
+            raise serializers.ValidationError(
+                {
+                    "email": f"Пользователь username: {user.username} с таким email уже существует"
+                }
+            )
 
     def validate(self, attrs: dict):
         password = attrs["password"]

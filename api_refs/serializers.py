@@ -48,22 +48,17 @@ class EmailSerializer(serializers.Serializer):
     @staticmethod
     def validate_email(value: str) -> Union[Dict[str, str], None]:
         try:
-            user: (
-                get_user_model()
-                .objects.select_related("referral_code")
+            user: UserModel = (
+                get_user_model().objects.select_related("referral_code")
                 .get(email=value)
             )
-            user: UserModel = user.objects.get(email=value)
-        except user.DoesNotExist:
+        except UserModel.DoesNotExist:
             raise serializers.ValidationError(
                 {"errors": "Пользователь с таким email не найден."}
             )
 
-        referral_code: Optional[ReferralCode] = user.referral_code.filter(
-            expiration_date__gt=timezone.now()
-        ).first()
-        if referral_code:
-            return {"referral_code": referral_code.code}
+        if hasattr(user, 'referral_code') and user.referral_code.expiration_date > timezone.now():
+            return {"referral_code": user.referral_code.code}
         else:
             raise serializers.ValidationError(
                 {"errors": "У пользователя нет активного реферального кода."}
