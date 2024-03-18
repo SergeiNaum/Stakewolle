@@ -51,9 +51,7 @@ services:
       - data:/var/lib/postgresql/data/
 
   celery:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: sergeynaum/stakewolle:latest
     container_name: celery
     restart: always
     env_file:

@@ -3,6 +3,11 @@
 
 ## Quick start
 
+### For your convenience, the application is deployed on my private server at:
+#### --> [CLICK FOR TEST HERE](http://77.222.53.154:8000/api/schema/swagger-ui/) <--
+  
+#### Or you can deploy the project locally by following these instructions:
+
 ##### create directory app and navigate to it
 
 ```
