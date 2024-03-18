@@ -1,11 +1,13 @@
 import datetime
 import string
 import random
+# import clearbit
 from typing import List
 
 from django.utils import timezone
 from django.contrib.auth.models import User
 from celery import shared_task
+
 
 
 from api_refs.models import ReferralCode, Referral
@@ -71,3 +73,26 @@ def register_user(username: str, email: str, password: str) -> int:
         password=password
     )
     return user.pk
+
+
+# @shared_task(bind=True)
+# def enrich_user_data(email: str) -> dict:
+# """
+# Версия пакета clearbit несовместима современными версиями языка python поэтому я ее не установил
+# Понижать версию языка я не стал, ввиду возможных проблем совместимости в других сторонних пакетах
+# Это пример кода который мог бы быть исполнен если бы пакет clearbit поддерживал python 3.10 и выше
+# во views код вызывающий отложенную задачу celery так же закомментирован
+# """
+#     clearbit.key: str = 'sk_1f8d2e16fffd45e6c29d20b2b5e9003f'
+#     try:
+#         clearbit_data = clearbit.Enrichment.find(email=email, stream=True)
+#         if clearbit_data and 'company' in clearbit_data:
+#             user: User = User.objects.get(email=email)
+#             user.company_name = clearbit_data['company'].get('name', '')
+#             user.company_domain = clearbit_data['company'].get('domain', '')
+#             user.save()
+#             return clearbit_data
+#         else:
+#             return {"error": "No company data available for this user."}
+#     except (ObjectDoesNotExist, KeyError) as e:
+#         return {"error": str(e)}clearbit

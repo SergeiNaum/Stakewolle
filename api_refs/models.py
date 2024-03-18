@@ -3,9 +3,9 @@ from django.db import models
 
 
 class ReferralCode(models.Model):
-    user: models.OneToOneField(User, on_delete=models.CASCADE, related_name='referral_code')
-    code: models.CharField(max_length=10, unique=True)
-    expiration_date: models.DateTimeField()
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='referral_code')
+    code = models.CharField(max_length=10, unique=True)
+    expiration_date = models.DateTimeField()
 
 
 class Referral(models.Model):

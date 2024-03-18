@@ -21,6 +21,7 @@ djangorestframework-simplejwt = "^5.3.1"
 aiohttp = "^3.9.3"
 
 
+
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.0.0"
 black = "^24.1.1"

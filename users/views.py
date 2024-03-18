@@ -23,15 +23,16 @@ class RegisterView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
 
-        task = register_user.delay(
+        task_create = register_user.delay(
             validated_data['username'],
             validated_data['email'],
-            validated_data['password']
+            validated_data['password'],
         )
+        # enrich_user_data.delay(user.email)  # Hypothetical launch of email data enrichment
 
         response_data: dict = {
             "message": "Пользователь успешно зарегистрирован",
-            "task_id": task.id
+            "task_id": task_create.id
         }
         return Response(response_data, status=status.HTTP_202_ACCEPTED)
 
